@@ -1,7 +1,11 @@
 {
   "logo": "logo-1795613961344.png",
   "ffBanner": null,
-  "banners": null,
+  "banners": [
+    "banner-1795613993063-1834.jpg",
+    "default:Banner 2.jpg",
+    "default:Banner 3.jpg"
+  ],
   "quick": null,
   "images": null,
   "prod": null,

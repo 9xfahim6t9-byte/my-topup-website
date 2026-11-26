@@ -782,6 +782,17 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 .ac-mi.out{color:#b42318}
 .ac-mi.out .mi{background:#fee4e2;color:#b42318}
 </style>
+<style>
+/* FFX functional account/payment UI additions */
+.ffx-extra{max-width:760px;margin:22px auto 90px;padding:0 14px;font-family:inherit;color:var(--tx,#172033)}
+.ffx-card{background:#fff;border:1px solid var(--bd,#dbe4f0);border-radius:20px;padding:20px;margin:14px 0;box-shadow:0 10px 28px -22px rgba(15,35,80,.45)}
+.ffx-title{display:flex;align-items:center;gap:10px;margin:0 0 16px;font-size:22px;font-weight:800}.ffx-sub{color:#64748b;font-size:13px;line-height:1.6;margin:-8px 0 16px}
+.ffx-form{display:grid;gap:12px}.ffx-form label{font-size:13px;font-weight:700;color:#334155}.ffx-form input,.ffx-form select,.ffx-form textarea{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:12px;padding:13px 14px;font:inherit;font-size:15px;background:#fff;color:#0f172a;outline:none}.ffx-form input:focus,.ffx-form select:focus,.ffx-form textarea:focus{border-color:#2563eb;box-shadow:0 0 0 3px #2563eb18}
+.ffx-btn{border:0;border-radius:12px;padding:13px 18px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;font-weight:800;font-size:15px;cursor:pointer;width:100%}.ffx-btn.secondary{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}.ffx-btn:disabled{opacity:.55;cursor:not-allowed}
+.ffx-note{padding:12px 14px;border-radius:12px;background:#eff6ff;color:#1e40af;font-size:13px;line-height:1.6;margin:12px 0}.ffx-warning{background:#fff7ed;color:#9a3412;border:1px solid #fed7aa}.ffx-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ffx-pill{display:inline-block;border-radius:30px;background:#f1f5f9;padding:5px 10px;font-size:12px;font-weight:700;color:#475569}
+.ffx-back{border:0;background:transparent;color:#2563eb;font-weight:800;padding:8px 0;cursor:pointer}.ffx-extra[hidden]{display:none!important}
+@media(max-width:480px){.ffx-card{padding:16px}.ffx-title{font-size:19px}.ffx-actions{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 
@@ -3053,5 +3064,90 @@ setInterval(fetchFreshAccountConfig, 15000);
   sync();
 })();
 </script>
+
+<!-- FFX added account, send-money and payment pages -->
+<main class="ffx-extra" id="ffxExtraPage" hidden>
+  <button class="ffx-back" type="button" id="ffxBack">← ফিরে যান</button>
+  <section class="ffx-card" id="ffxLoginPage" hidden>
+    <h1 class="ffx-title">অ্যাকাউন্টে প্রবেশ করুন</h1>
+    <p class="ffx-sub">ডেমো অ্যাকাউন্ট ব্যবস্থা। এটি এখনো সার্ভার-ভিত্তিক নিরাপদ লগইন নয়।</p>
+    <form class="ffx-form" id="ffxAuthForm">
+      <div id="ffxNameWrap"><label for="ffxName">আপনার নাম</label><input id="ffxName" autocomplete="name" placeholder="আপনার নাম" required></div>
+      <div><label for="ffxEmail">ইমেইল</label><input id="ffxEmail" type="email" autocomplete="email" placeholder="name@example.com" required></div>
+      <div><label for="ffxPass">পাসওয়ার্ড</label><input id="ffxPass" type="password" autocomplete="current-password" minlength="6" placeholder="কমপক্ষে ৬ অক্ষর" required></div>
+      <button class="ffx-btn" id="ffxAuthSubmit" type="submit">Create Account</button>
+      <button class="ffx-btn secondary" id="ffxAuthSwitch" type="button">আগে অ্যাকাউন্ট আছে? Login</button>
+    </form>
+    <div class="ffx-note ffx-warning">নিরাপত্তা: এই GitHub Pages সংস্করণে পাসওয়ার্ড যাচাই বা সংরক্ষণ করা হয় না। লাইভ ব্যবহারের আগে Firebase Authentication বা সমমানের সার্ভার অথেনটিকেশন যুক্ত করতে হবে।</div>
+  </section>
+  <section class="ffx-card" id="ffxSendPage" hidden>
+    <h1 class="ffx-title">Send Money</h1>
+    <p class="ffx-sub">আপনার ওয়ালেট থেকে অন্য ব্যবহারকারীর কাছে টাকা পাঠানোর অনুরোধ তৈরি করুন।</p>
+    <div class="ffx-note ffx-warning">এটি বর্তমানে ডেমো রিকোয়েস্ট। কোনো টাকা বাস্তবে স্থানান্তর হবে না এবং ওয়ালেট থেকে টাকা কাটা হবে না।</div>
+    <form class="ffx-form" id="ffxSendForm">
+      <div><label for="ffxRecipient">প্রাপকের অ্যাকাউন্ট ইমেইল / ইউজার আইডি</label><input id="ffxRecipient" required maxlength="100" placeholder="প্রাপকের আইডি বা ইমেইল"></div>
+      <div><label for="ffxSendAmount">পরিমাণ (৳)</label><input id="ffxSendAmount" type="number" min="1" max="50000" step="1" required placeholder="যেমন 100"></div>
+      <div><label for="ffxSendNote">নোট (ঐচ্ছিক)</label><textarea id="ffxSendNote" rows="2" maxlength="160" placeholder="লেনদেনের বিবরণ"></textarea></div>
+      <button class="ffx-btn" type="submit">Send Money Request</button>
+    </form>
+  </section>
+  <section class="ffx-card" id="ffxAddPage" hidden>
+    <h1 class="ffx-title">Add Money / Payment</h1>
+    <p class="ffx-sub">পেমেন্টের তথ্য দিয়ে একটি রিচার্জ রিকোয়েস্ট জমা দিন।</p>
+    <div class="ffx-note ffx-warning">পেমেন্ট গেটওয়ে এখনো সংযুক্ত নয়। নিচের ফর্ম শুধু ডেমো রিকোয়েস্ট তৈরি করবে; এখানে টাকা পাঠাবেন না।</div>
+    <form class="ffx-form" id="ffxAddForm">
+      <div><label for="ffxMethod">পেমেন্ট মাধ্যম</label><select id="ffxMethod"><option>bKash</option><option>Nagad</option><option>Rocket</option></select></div>
+      <div><label for="ffxPayAmount">পরিমাণ (৳)</label><input id="ffxPayAmount" type="number" min="10" max="50000" step="1" required placeholder="যেমন 200"></div>
+      <div><label for="ffxSender">যে নম্বর থেকে পেমেন্ট করেছেন</label><input id="ffxSender" inputmode="numeric" pattern="01[0-9]{9}" maxlength="11" required placeholder="01XXXXXXXXX"></div>
+      <div><label for="ffxTrx">Transaction ID</label><input id="ffxTrx" required maxlength="80" placeholder="পেমেন্টের TrxID"></div>
+      <button class="ffx-btn" type="submit">Submit Payment Request</button>
+    </form>
+  </section>
+  <section class="ffx-card" id="ffxHistoryPage" hidden>
+    <h1 class="ffx-title">My Requests</h1><div id="ffxHistoryList"></div>
+  </section>
+  <section class="ffx-card" id="ffxHomePage" hidden>
+    <h1 class="ffx-title">Account Services</h1>
+    <p class="ffx-sub" id="ffxWelcome">Guest account</p>
+    <div class="ffx-actions"><button class="ffx-btn" data-ffx-go="send">Send Money</button><button class="ffx-btn" data-ffx-go="add">Add Money</button><button class="ffx-btn secondary" data-ffx-go="history">My Requests</button><button class="ffx-btn secondary" id="ffxLogout">Logout</button></div>
+    <div class="ffx-note">Wallet balance: ৳0.00 · Live wallet service is not connected.</div>
+  </section>
+</main>
+<script>
+(function(){
+  'use strict';
+  var extra=document.getElementById('ffxExtraPage'); if(!extra) return;
+  var pages=['ffxLoginPage','ffxSendPage','ffxAddPage','ffxHistoryPage','ffxHomePage'];
+  var mode='register';
+  function getUser(){try{return JSON.parse(sessionStorage.getItem('ffx_demo_user')||'null')}catch(e){return null}}
+  function getReq(){try{return JSON.parse(localStorage.getItem('ffx_demo_requests')||'[]')}catch(e){return []}}
+  function setReq(a){localStorage.setItem('ffx_demo_requests',JSON.stringify(a.slice(-100)))}
+  function toast(m){var t=document.getElementById('toast');if(t){t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2600)}else alert(m)}
+  function showPage(id){pages.forEach(function(x){document.getElementById(x).hidden=x!==id});['homeView','ffView','uidView','wmView','wlView','luView','inView','orView','cdView','acView','trView','ctView','ucView'].forEach(function(x){var el=document.getElementById(x);if(el)el.hidden=true});var footer=document.getElementById('siteFooter');if(footer)footer.hidden=true;extra.hidden=false;var panel=document.getElementById('accPanel');if(panel){panel.classList.remove('show');panel.setAttribute('aria-hidden','true')}document.body.style.overflow='';window.scrollTo(0,0)}
+  function sync(){var h=location.hash;var map={'#ffx-login':'ffxLoginPage','#send-money':'ffxSendPage','#add-money':'ffxAddPage','#ffx-requests':'ffxHistoryPage','#ffx-account':'ffxHomePage'};if(map[h]){showPage(map[h]);if(h==='#ffx-account'){var u=getUser();document.getElementById('ffxWelcome').textContent=u?'Logged in as '+u.name+' ('+u.email+')':'Guest mode';}if(h==='#ffx-requests')renderHistory();}else{extra.hidden=true;}}
+  function go(h){location.hash=h;sync()}
+  document.getElementById('ffxBack').onclick=function(){if(history.length>1)history.back();else location.hash='';};
+  function setMode(m){mode=m;document.getElementById('ffxNameWrap').hidden=m==='login';document.getElementById('ffxAuthSubmit').textContent=m==='login'?'Login':'Create Account';document.getElementById('ffxAuthSwitch').textContent=m==='login'?'নতুন অ্যাকাউন্ট খুলুন':'আগে অ্যাকাউন্ট আছে? Login';document.getElementById('ffxPass').autocomplete=m==='login'?'current-password':'new-password';}
+  document.getElementById('ffxAuthSwitch').onclick=function(){setMode(mode==='login'?'register':'login')};
+  document.getElementById('ffxAuthForm').onsubmit=function(e){e.preventDefault();var email=document.getElementById('ffxEmail').value.trim().toLowerCase(),pass=document.getElementById('ffxPass').value,name=document.getElementById('ffxName').value.trim();if(pass.length<6){toast('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে');return;}if(mode==='register'&&!name){toast('আপনার নাম লিখুন');return;}var saved;try{saved=JSON.parse(localStorage.getItem('ffx_demo_profile_'+email)||'null')}catch(x){}if(mode==='register'){if(saved){toast('এই ইমেইলে ডেমো অ্যাকাউন্ট আছে');return;}saved={name:name,email:email};localStorage.setItem('ffx_demo_profile_'+email,JSON.stringify(saved));}else if(!saved){toast('এই ইমেইলে ডেমো অ্যাকাউন্ট নেই');return;}sessionStorage.setItem('ffx_demo_user',JSON.stringify(saved));toast('ডেমো লগইন সফল');go('#ffx-account');};
+  document.querySelectorAll('[data-ffx-go]').forEach(function(b){b.onclick=function(){var u=getUser();if(!u){go('#ffx-login');setMode('register');return;}var v=b.getAttribute('data-ffx-go');go(v==='send'?'#send-money':v==='add'?'#add-money':'#ffx-requests');};});
+  document.getElementById('ffxLogout').onclick=function(){sessionStorage.removeItem('ffx_demo_user');toast('Logout হয়েছে');go('#ffx-login');setMode('login');};
+  function requireUser(){if(!getUser()){go('#ffx-login');setMode('login');return false;}return true;}
+  document.getElementById('ffxSendForm').onsubmit=function(e){e.preventDefault();if(!requireUser())return;var recipient=document.getElementById('ffxRecipient').value.trim(),amount=Number(document.getElementById('ffxSendAmount').value),note=document.getElementById('ffxSendNote').value.trim();if(!Number.isSafeInteger(amount)||amount<1||amount>50000){toast('সঠিক পরিমাণ লিখুন');return;}if(recipient.toLowerCase()===getUser().email){toast('নিজের অ্যাকাউন্টে পাঠানো যাবে না');return;}var a=getReq();a.push({id:'SM'+Date.now(),type:'Send Money',recipient:recipient,amount:amount,note:note,status:'Demo - Not Sent',date:new Date().toLocaleString('bn-BD')});setReq(a);this.reset();toast('ডেমো রিকোয়েস্ট তৈরি হয়েছে; টাকা পাঠানো হয়নি');go('#ffx-requests');};
+  document.getElementById('ffxAddForm').onsubmit=function(e){e.preventDefault();if(!requireUser())return;var amount=Number(document.getElementById('ffxPayAmount').value),sender=document.getElementById('ffxSender').value.trim(),trx=document.getElementById('ffxTrx').value.trim();if(!Number.isSafeInteger(amount)||amount<10||amount>50000){toast('১০ থেকে ৫০,০০০ টাকার মধ্যে পরিমাণ লিখুন');return;}if(!/^01\d{9}$/.test(sender)||!trx){toast('সঠিক নম্বর ও TrxID দিন');return;}var a=getReq();a.push({id:'PM'+Date.now(),type:'Payment Request',method:document.getElementById('ffxMethod').value,amount:amount,sender:sender,trx:trx,status:'Demo - Unverified',date:new Date().toLocaleString('bn-BD')});setReq(a);this.reset();toast('ডেমো পেমেন্ট রিকোয়েস্ট তৈরি হয়েছে; কোনো পেমেন্ট যাচাই হয়নি');go('#ffx-requests');};
+  function renderHistory(){var box=document.getElementById('ffxHistoryList'),a=getReq().slice().reverse();box.innerHTML='';if(!a.length){box.textContent='এখনো কোনো রিকোয়েস্ট নেই।';return;}a.forEach(function(x){var d=document.createElement('div');d.className='ffx-note';var title=document.createElement('b');title.textContent=x.type+' · ৳'+x.amount;var detail=document.createElement('div');detail.textContent=(x.id||'')+' | '+(x.date||'')+' | '+(x.status||'Pending');var extraText=document.createElement('div');extraText.textContent=x.recipient||((x.method||'')+' · '+(x.sender||'')+' · '+(x.trx||''));d.appendChild(title);d.appendChild(detail);d.appendChild(extraText);box.appendChild(d);});}
+  // Existing profile/menu links now open the new UI pages.
+  var accountLogin=document.getElementById('accLo');if(accountLogin)accountLogin.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();if(getUser())go('#ffx-account');else{setMode('login');go('#ffx-login');}},true);
+  var accountLogout=document.getElementById('acLogout');if(accountLogout)accountLogout.onclick=function(){sessionStorage.removeItem('ffx_demo_user');go('#ffx-login');setMode('login');};
+  var addBtn=document.getElementById('acAdd');if(addBtn)addBtn.onclick=function(){if(requireUser())go('#add-money');};
+  document.querySelectorAll('.acc-it[data-go="addmoney"],#acView [data-to="add-money"]').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();if(requireUser())go('#add-money');},true)});
+  document.querySelectorAll('.acc-it[data-go="transaction"]').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();if(requireUser())go('#ffx-requests');},true)});
+  var wallet=document.querySelector('.wallet');if(wallet)wallet.addEventListener('click',function(e){e.preventDefault();if(requireUser())go('#add-money');});
+  // Inject a Send Money entry into the account menu without changing its design.
+  var menu=document.querySelector('#accPanel .acc-list');if(menu&&!menu.querySelector('[data-go="sendmoney"]')){var a=document.createElement('a');a.className='acc-it';a.href='#send-money';a.setAttribute('data-go','sendmoney');a.textContent='Send Money';a.addEventListener('click',function(e){e.preventDefault();if(requireUser())go('#send-money');},true);menu.appendChild(a);}
+  window.addEventListener('hashchange',sync);sync();
+})();
+</script>
+
 </body>
 </html>

@@ -11,5 +11,35 @@
     "pop": "img-pop-1795614038864.png"
   },
   "prod": null,
-  "texts": null
+  "texts": null,
+  "paymentGateways": [
+    {
+      "key": "bkash",
+      "name": "bKash",
+      "number": "",
+      "enabled": true,
+      "logoText": "b",
+      "logoUrl": "",
+      "instructions": ""
+    },
+    {
+      "key": "nagad",
+      "name": "Nagad",
+      "number": "01883497562",
+      "enabled": true,
+      "logoText": "N",
+      "logoUrl": "https://kommodo.ai/i/n9HJW5SLh5Fb9DHOONiy",
+      "instructions": ""
+    },
+    {
+      "key": "rocket",
+      "name": "Rocket",
+      "number": "",
+      "enabled": true,
+      "logoText": "R",
+      "logoUrl": "",
+      "instructions": ""
+    }
+  ],
+  "categories": null
 }
